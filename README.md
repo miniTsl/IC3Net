@@ -22,11 +22,11 @@ If you use this code or IC3Net in your work, please cite the following:
 
 ## Installation
 
-First, clone the repo and install ic3net-envs which contains implementation for Predator-Prey and Traffic-Junction
+First, clone the repo and install ic3net_envs which contains implementation for Predator-Prey and Traffic-Junction
 
 ```
 git clone https://github.com/IC3Net/IC3Net
-cd IC3Net/ic3net-envs
+cd IC3Net/ic3net_envs
 python setup.py develop
 ```
 
