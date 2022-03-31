@@ -103,3 +103,4 @@ ENV/
 # Models
 *.onnx
 *.pt
+.vscode/launch.json
