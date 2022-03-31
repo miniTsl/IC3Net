@@ -38,7 +38,14 @@ Next, we need to install dependencies for IC3Net including PyTorch. For doing th
 ```
 pip install -r requirements.txt
 ```
-
+'''
+python==3.6
+numpy==1.19.2
+torch==1.4.0
+gym==0.9.6
+Pillow==6.2.0
+visdom==0.1.4
+'''
 ## Running
 
 Once everything is installed, we can run the using these example commands
