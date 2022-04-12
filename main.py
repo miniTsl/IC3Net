@@ -22,12 +22,14 @@ torch.set_default_tensor_type('torch.DoubleTensor')
 parser = argparse.ArgumentParser(description='PyTorch RL trainer')
 # training
 # note: number of steps per epoch = epoch_size X batch_size x nprocesses
+# IC3net中总步数为2000*16*500*10 = 160000000(medium)
 parser.add_argument('--num_epochs', default=100, type=int,
                     help='number of training epochs')
 parser.add_argument('--epoch_size', type=int, default=10,
                     help='number of update iterations in an epoch')
 parser.add_argument('--batch_size', type=int, default=500,
                     help='number of steps before each update (per thread)')
+# for medium, 500//40 + 1 = 13 episodes before each update. The last episode is not 40 steps.
 parser.add_argument('--nprocesses', type=int, default=16,
                     help='How many processes to run')
 # model
@@ -226,7 +228,7 @@ def run(num_epochs):
 
         np.set_printoptions(precision=2)
 
-        print('Epoch {}\tReward {}\tTime {:.2f}s'.format(
+        print('Epoch {}\t \n Reward {} \n \tTime {:.2f}s'.format(
                 epoch, stat['reward'], epoch_time
         ))
 
@@ -235,7 +237,7 @@ def run(num_epochs):
         if 'add_rate' in stat.keys():
             print('Add-Rate: {:.2f}'.format(stat['add_rate']))
         if 'success' in stat.keys():
-            print('Success: {:.2f}'.format(stat['success']))
+            print('Success: {:.5f}'.format(stat['success']))
         if 'steps_taken' in stat.keys():
             print('Steps-taken: {:.2f}'.format(stat['steps_taken']))
         if 'comm_action' in stat.keys():
@@ -283,6 +285,7 @@ if args.load != '':
     load(args.load)
 
 run(args.num_epochs)
+
 if args.display:
     env.end_display()
 
