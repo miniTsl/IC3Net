@@ -76,7 +76,6 @@ class TrafficJunctionEnv(gym.Env):
         env.add_argument('--vocab_type', type=str, default='bool',
                          help="Type of location vector to use, bool|scalar")
 
-
     def multi_agent_init(self, args):
         # General variables defining the environment : CONFIG
         params = ['dim', 'vision', 'add_rate_min', 'add_rate_max', 'curr_start', 'curr_end',
@@ -86,7 +85,7 @@ class TrafficJunctionEnv(gym.Env):
             setattr(self, key, getattr(args, key))
 
         self.ncar = args.nagents
-        self.dims = dims = (self.dim, self.dim)
+        self.dims = dims = (self.dim, self.dim) # box是二维的
         difficulty = args.difficulty
         vision = args.vision
 
@@ -101,9 +100,9 @@ class TrafficJunctionEnv(gym.Env):
 
         # Add rate
         self.exact_rate = self.add_rate = self.add_rate_min
-        self.epoch_last_update = 0
+        self.epoch_last_update = 0  
 
-        # Define what an agent can do -
+        # Define what an agent can do:
         # (0: GAS, 1: BRAKE) i.e. (0: Move 1-step, 1: STAY)
         self.naction = 2
         self.action_space = spaces.Discrete(self.naction)
@@ -123,19 +122,19 @@ class TrafficJunctionEnv(gym.Env):
                 'medium': 2 * dim_sum,
                 'hard':   4 * dim_sum}
 
-        self.npath = nPr(nroad[difficulty],2)
+        self.npath = nPr(nroad[difficulty],2)   # 12
 
         # Setting max vocab size for 1-hot encoding
         if self.vocab_type == 'bool':
-            self.BASE = base[difficulty]
-            self.OUTSIDE_CLASS += self.BASE
-            self.CAR_CLASS += self.BASE
+            self.BASE = base[difficulty]    # 28*2=56
+            self.OUTSIDE_CLASS += self.BASE # 56
+            self.CAR_CLASS += self.BASE # 2+56=58
             # car_type + base + outside + 0-index
-            self.vocab_size = 1 + self.BASE + 1 + 1
+            self.vocab_size = 1 + self.BASE + 1 + 1 # 56+3=59
             self.observation_space = spaces.Tuple((
-                                    spaces.Discrete(self.naction),
-                                    spaces.Discrete(self.npath),
-                                    spaces.MultiBinary( (2*vision + 1, 2*vision + 1, self.vocab_size))))
+                                    spaces.Discrete(self.naction),  # 2
+                                    spaces.Discrete(self.npath),    # 12
+                                    spaces.MultiBinary( (2*vision + 1, 2*vision + 1, self.vocab_size))))    # (1,1,59)
         else:
             # r_i, (x,y), vocab = [road class + car]
             self.vocab_size = 1 + 1
@@ -199,7 +198,7 @@ class TrafficJunctionEnv(gym.Env):
             self.curriculum(epoch)
             self.epoch_last_update = epoch
 
-        # Observation will be ncar * vision * vision ndarray
+        # Observation will be ncar * vision  ndarray
         obs = self._get_obs()
         return obs
 
@@ -248,7 +247,8 @@ class TrafficJunctionEnv(gym.Env):
 
         self.stat['success'] = 1 - self.has_failed
         self.stat['add_rate'] = self.add_rate
-
+        
+        # 这个self.episode_over是在IC3NET的trainer中通过达到每个episode的最大步数后才控制成True的
         return obs, reward, self.episode_over, debug
 
     def render(self, mode='human', close=False):
@@ -365,7 +365,6 @@ class TrafficJunctionEnv(gym.Env):
 
         return obs
 
-
     def _add_cars(self):
         for r_i, routes in enumerate(self.routes):
             if self.cars_in_sys >= self.ncar:
@@ -408,7 +407,6 @@ class TrafficJunctionEnv(gym.Env):
         self.routes['LEFT'].append(np.array([*full]))
 
         self.routes = list(self.routes.values())
-
 
     def _set_paths_medium_old(self):
         h,w = self.dims
@@ -522,7 +520,6 @@ class TrafficJunctionEnv(gym.Env):
         # Test all paths
         assert self._unittest_path(paths)
 
-
     def _unittest_path(self,paths):
         for i, p in enumerate(paths[:-1]):
             next_dif = p - np.row_stack([p[1:], p[-1]])
@@ -535,7 +532,6 @@ class TrafficJunctionEnv(gym.Env):
                 print("All", p, i)
                 return False
         return True
-
 
     def _take_action(self, idx, act):
         # non-active car
@@ -579,8 +575,6 @@ class TrafficJunctionEnv(gym.Env):
 
             # Change last act for color:
             self.car_last_act[idx] = 0
-
-
 
     def _get_reward(self):
         reward = np.full(self.ncar, self.TIMESTEP_PENALTY) * self.wait

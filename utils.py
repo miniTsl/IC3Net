@@ -12,7 +12,7 @@ from torch.autograd import Variable
 
 LogField = namedtuple('LogField', ('data', 'plot', 'x_axis', 'divide_by'))
 
-def merge_stat(src, dest):
+def merge_stat(src, dest):  # 有则改之无则补之
     for k, v in src.items():
         if not k in dest:
             dest[k] = v

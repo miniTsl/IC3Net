@@ -17,7 +17,7 @@ class CommNetMLP(nn.Module):
         Arguments:
             MLP {object} -- Self
             args {Namespace} -- Parse args namespace
-            num_inputs {number} -- Environment observation dimension for agents
+            num_inputs {number} -- Environment observation dimension for agents: 61 of tf_medium
         """
 
         super(CommNetMLP, self).__init__()
@@ -135,14 +135,15 @@ class CommNetMLP(nn.Module):
         # TODO: Update dimensions
         """Forward function for CommNet class, expects state, previous hidden
         and communication tensor.
-        B: Batch Size: Normally 1 in case of episode
-        N: number of agents
 
         Arguments:
-            x {tensor} -- State of the agents (N x num_inputs)
+            x {tensor} -- State of the agents (B x N x num_inputs)          
+                B: Batch Size: Normally 1 in case of episode
+                N: number of agents
+                num_inputs : 61 for tf_medium
             prev_hidden_state {tensor} -- Previous hidden state for the networks in
-            case of multiple passes (1 x N x hid_size)
-            comm_in {tensor} -- Communication tensor for the network. (1 x N x N x hid_size)
+            case of multiple passes (B x N x hid_size)
+            comm_in {tensor} -- Communication tensor for the network. (B x N x N x hid_size)
 
         Returns:
             tuple -- Contains

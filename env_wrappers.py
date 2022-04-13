@@ -18,12 +18,14 @@ class GymWrapper(object):
         '''
 
         # tuple space
-        if hasattr(self.env.observation_space, 'spaces'):
+        if hasattr(self.env.observation_space, 'spaces'): 
+        # Return whether the object has an attribute with the given name.
             total_obs_dim = 0
             for space in self.env.observation_space.spaces:
                 if hasattr(self.env.action_space, 'shape'):
+                    # 淦：The product of an empty array is the neutral element 1。实际是1+1+59 = 61
                     total_obs_dim += int(np.prod(space.shape))
-                else: # Discrete
+                else: 
                     total_obs_dim += 1
             return total_obs_dim
         else:
@@ -35,7 +37,7 @@ class GymWrapper(object):
             # MultiDiscrete
             return int(self.env.action_space.nvec[0])
         elif hasattr(self.env.action_space, 'n'):
-            # Discrete
+            # Discrete，traffic junction属于这种情况，只有两种动作
             return self.env.action_space.n
 
     @property
@@ -55,6 +57,7 @@ class GymWrapper(object):
 
     def reset(self, epoch):
         reset_args = getargspec(self.env.reset).args
+        # Get the names and default values of a function's parameters.
         if 'epoch' in reset_args:
             obs = self.env.reset(epoch)
         else:
@@ -76,6 +79,7 @@ class GymWrapper(object):
         if self.dim_actions == 1:
             action = action[0]
         obs, r, done, info = self.env.step(action)
+        
         obs = self._flatten_obs(obs)
         return (obs, r, done, info)
 

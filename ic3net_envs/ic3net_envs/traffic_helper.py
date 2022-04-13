@@ -24,7 +24,6 @@ def get_road_blocks(w, h, difficulty):
 def goal_reached(place_i, curr, finish_points):
     return curr in finish_points[:place_i] + finish_points[place_i+1:]
 
-
 def get_add_mat(dims, grid, difficulty):
     h,w = dims
 
@@ -150,8 +149,6 @@ def next_move(curr, turn, turn_step, start, grid, road_dir, junction, visited):
         return neigh[0], turn_prog, turn_completed
     if len(neigh) != 1:
         raise RuntimeError("next move should be of len 1. Reached ambiguous situation.")
-
-
 
 def get_routes(dims, grid, difficulty):
     '''

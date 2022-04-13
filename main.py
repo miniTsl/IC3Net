@@ -93,7 +93,7 @@ parser.add_argument('--comm_passes', type=int, default=1,
 parser.add_argument('--comm_mask_zero', action='store_true', default=False,
                     help="Whether communication should be there")
 parser.add_argument('--mean_ratio', default=1.0, type=float,
-                    help='how much coooperative to do? 1.0 means fully cooperative')
+                    help='how much coooperative to do? 1.0 means fully cooperative, 0.0 means individual rewards')
 parser.add_argument('--rnn_type', default='MLP', type=str,
                     help='type of rnn to use. [LSTM|MLP]')
 parser.add_argument('--detach_gap', default=10000, type=int,
@@ -133,14 +133,14 @@ if hasattr(args, 'enemy_comm') and args.enemy_comm:
 
 env = data.init(args.env_name, args, False)
 
-num_inputs = env.observation_dim
-args.num_actions = env.num_actions
+num_inputs = env.observation_dim    # 61
+args.num_actions = env.num_actions  # 2
 
 # Multi-action
 if not isinstance(args.num_actions, (list, tuple)): # single action case
-    args.num_actions = [args.num_actions]
-args.dim_actions = env.dim_actions
-args.num_inputs = num_inputs
+    args.num_actions = [args.num_actions]   # [2]
+args.dim_actions = env.dim_actions  # 1
+args.num_inputs = num_inputs    # 61
 
 # Hard attention
 if args.hard_attn and args.commnet:
@@ -161,7 +161,10 @@ if args.seed == -1:
 torch.manual_seed(args.seed)
 
 print(args)
-
+'''
+Namespace(action_scale=1.0, add_rate_max=0.05, add_rate_min=0.2, advantages_per_action=False, batch_size=500, comm_action_one=False, comm_init='uniform', comm_mask_zero=False, comm_mode='avg', comm_passes=1, commnet=True, continuous=False, curr_end=1250.0, curr_start=250.0, detach_gap=10, difficulty='medium', dim=14, dim_actions=1, display=False, entr=0, env_name='traffic_junction', epoch_size=10, gamma=1.0, hard_attn=False, hid_size=128, ic3net=False, load='', lrate=0.001, max_steps=40, mean_ratio=1.0, naction_heads=[2], nactions='1', nagents=10, nfriendly=10, normalize_rewards=False, nprocesses=1, num_actions=[2], num_epochs=2000, num_inputs=61, plot=False, plot_env='main', random=False, recurrent=True, rnn_type='LSTM', save='', save_every=0, 
+seed=6943, share_weights=False, tau=1.0, value_coeff=0.01, vision=0, vocab_type='bool')
+'''
 
 if args.commnet:
     policy_net = CommNetMLP(args, num_inputs)

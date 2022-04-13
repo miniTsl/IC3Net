@@ -22,14 +22,18 @@ class Trainer(object):
             lr = args.lrate, alpha=0.97, eps=1e-6)
         self.params = [p for p in self.policy_net.parameters()]
 
-
     def get_episode(self, epoch):
         episode = []
+        # Get the names and default values of a function's parameters.
         reset_args = getargspec(self.env.reset).args
+        
+        # episode初始化
         if 'epoch' in reset_args:
             state = self.env.reset(epoch)
         else:
             state = self.env.reset()
+        # state的shape：torch.Size([1, 10, 61])
+        
         should_display = self.display and self.last_step
 
         if should_display:
@@ -106,7 +110,7 @@ class Trainer(object):
             state = next_state
             if done:
                 break
-        stat['num_steps'] = t + 1
+        stat['num_steps'] = t + 1   # 就是batch_size = 500
         stat['steps_taken'] = stat['num_steps']
 
         if hasattr(self.env, 'reward_terminal'):
@@ -225,7 +229,7 @@ class Trainer(object):
         return stat
 
     def run_batch(self, epoch):
-        batch = []
+        batch = []  # list of list
         self.stats = dict()
         self.stats['num_episodes'] = 0
         while len(batch) < self.args.batch_size:
@@ -237,7 +241,7 @@ class Trainer(object):
             batch += episode
 
         self.last_step = False
-        self.stats['num_steps'] = len(batch)
+        self.stats['num_steps'] = len(batch)    # 一个batch的总步数,显然就是batch_size:500
         batch = Transition(*zip(*batch))
         return batch, self.stats
 
