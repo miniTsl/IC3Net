@@ -17,7 +17,7 @@ class CommNetMLP(nn.Module):
         Arguments:
             MLP {object} -- Self
             args {Namespace} -- Parse args namespace
-            num_inputs {number} -- Environment observation dimension for agents: 61 of tf_medium
+            num_inputs {number} -- Environment observation dimension for per agent: 61 in tf_medium
         """
 
         super(CommNetMLP, self).__init__()
@@ -39,7 +39,7 @@ class CommNetMLP(nn.Module):
         # Mask for communication
         if self.args.comm_mask_zero:
             self.comm_mask = torch.zeros(self.nagents, self.nagents)
-        else:
+        else:   # 除了主对角线全是1
             self.comm_mask = torch.ones(self.nagents, self.nagents) \
                             - torch.eye(self.nagents, self.nagents)
 
@@ -48,11 +48,13 @@ class CommNetMLP(nn.Module):
         # between last and first dim, num_agents dimension will be covered.
         # The network below is function r in the paper for encoding
         # initial environment stage
+        # 最开始的编码层
         self.encoder = nn.Linear(num_inputs, args.hid_size)
 
         # if self.args.env_name == 'starcraft':
         #     self.state_encoder = nn.Linear(num_inputs, num_inputs)
         #     self.encoder = nn.Linear(num_inputs * 2, args.hid_size)
+    
         if args.recurrent:
             self.hidd_encoder = nn.Linear(args.hid_size, args.hid_size)
 
@@ -93,6 +95,7 @@ class CommNetMLP(nn.Module):
         # Init weights for linear layers
         # self.apply(self.init_weights)
 
+        
         self.value_head = nn.Linear(self.hid_size, 1)
 
 
@@ -191,7 +194,7 @@ class CommNetMLP(nn.Module):
 
             mask = mask.expand_as(comm)
             comm = comm * mask
-
+            # 计算通信向量，需要除以系统中活着的agent的数量
             if hasattr(self.args, 'comm_mode') and self.args.comm_mode == 'avg' \
                 and num_agents_alive > 1:
                 comm = comm / (num_agents_alive - 1)
@@ -212,7 +215,8 @@ class CommNetMLP(nn.Module):
                 inp = x + c
 
                 inp = inp.view(batch_size * n, self.hid_size)
-
+                
+                # 估计LSTM自带非线性函数，所以这里就不用手动添加了
                 output = self.f_module(inp, (hidden_state, cell_state))
 
                 hidden_state = output[0]

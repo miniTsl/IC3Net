@@ -18,6 +18,7 @@ class Trainer(object):
         self.env = env
         self.display = False
         self.last_step = False
+        # 呵呵，policy_net和self.policy_net的地址是一样的，所以self.optimizer和self.params中的包含的参数其实是一样的
         self.optimizer = optim.RMSprop(policy_net.parameters(),
             lr = args.lrate, alpha=0.97, eps=1e-6)
         self.params = [p for p in self.policy_net.parameters()]
@@ -110,6 +111,7 @@ class Trainer(object):
             state = next_state
             if done:
                 break
+        
         stat['num_steps'] = t + 1   # 就是batch_size = 500
         stat['steps_taken'] = stat['num_steps']
 
