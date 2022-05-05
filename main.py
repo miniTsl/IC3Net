@@ -231,7 +231,7 @@ def run(num_epochs):
 
         np.set_printoptions(precision=2)
 
-        print('Epoch {} \t Reward {} \t Time {:.2f}s'.format(
+        print('Epoch {}\tReward {}\tTime {:.2f}s'.format(
                 epoch, stat['reward'], epoch_time
         ))
 
