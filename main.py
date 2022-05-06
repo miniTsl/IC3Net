@@ -161,6 +161,7 @@ if args.seed == -1:
 torch.manual_seed(args.seed)
 
 print(args)
+res_file = open('original_result.txt', mode='a+')
 '''
 Namespace(action_scale=1.0, add_rate_max=0.05, add_rate_min=0.2, advantages_per_action=False, batch_size=500, comm_action_one=False, comm_init='uniform', comm_mask_zero=False, comm_mode='avg', comm_passes=1, commnet=True, continuous=False, curr_end=1250.0, curr_start=250.0, detach_gap=10, difficulty='medium', dim=14, dim_actions=1, display=False, entr=0, env_name='traffic_junction', epoch_size=10, gamma=1.0, hard_attn=False, hid_size=128, ic3net=False, load='', lrate=0.001, max_steps=40, mean_ratio=1.0, naction_heads=[2], nactions='1', nagents=10, nfriendly=10, normalize_rewards=False, nprocesses=1, num_actions=[2], num_epochs=2000, num_inputs=61, plot=False, plot_env='main', random=False, recurrent=True, rnn_type='LSTM', save='', save_every=0, 
 seed=6943, share_weights=False, tau=1.0, value_coeff=0.01, vision=0, vocab_type='bool')
@@ -231,22 +232,28 @@ def run(num_epochs):
 
         np.set_printoptions(precision=2)
 
-        print('Epoch {}\tReward {}\tTime {:.2f}s'.format(
-                epoch, stat['reward'], epoch_time
-        ))
-
+        print('Epoch {} \t Reward {} \tTime {:.2f}s'.format(
+                epoch, stat['reward'], epoch_time))
+        res_file.write('Epoch {} \t Reward {} \tTime {:.2f}s'.format(
+                epoch, stat['reward'], epoch_time))
         if 'enemy_reward' in stat.keys():
             print('Enemy-Reward: {}'.format(stat['enemy_reward']))
+            res_file.write('\nEnemy-Reward: {}'.format(stat['enemy_reward']))
         if 'add_rate' in stat.keys():
             print('Add-Rate: {:.2f}'.format(stat['add_rate']))
+            res_file.write('\nAdd-Rate: {:.2f}'.format(stat['add_rate']))
         if 'success' in stat.keys():
             print('Success: {:.5f}'.format(stat['success']))
-        if 'steps_taken' in stat.keys():
-            print('Steps-taken: {:.2f}'.format(stat['steps_taken']))
+            res_file.write('\nSuccess: {:.5f}'.format(stat['success']))
+        # if 'steps_taken' in stat.keys():
+        #     print('\nSteps-taken: {:.2f}'.format(stat['steps_taken']))
+        #     res_file.write('Steps-taken: {:.2f}'.format(stat['steps_taken']))
         if 'comm_action' in stat.keys():
             print('Comm-Action: {}'.format(stat['comm_action']))
+            res_file.write('\nComm-Action: {}'.format(stat['comm_action']))
         if 'enemy_comm' in stat.keys():
             print('Enemy-Comm: {}'.format(stat['enemy_comm']))
+            res_file.write('\nEnemy-Comm: {}'.format(stat['enemy_comm']))
 
         if args.plot:
             for k, v in log.items():
@@ -288,6 +295,7 @@ if args.load != '':
     load(args.load)
 
 run(args.num_epochs)
+res_file.close()
 
 if args.display:
     env.end_display()
