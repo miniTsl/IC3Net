@@ -618,5 +618,5 @@ class TrafficJunctionEnv(gym.Env):
         if self.curr_start <= epoch < self.curr_end:
             self.exact_rate = self.exact_rate + step
             self.add_rate = step_size * (self.exact_rate // step_size)
-            print(self.add_rate)
-            print('{:.2f}'.format(self.add_rate))
+        print(self.add_rate)
+        print('{:.2f}'.format(self.add_rate))
