@@ -256,7 +256,7 @@ class Trainer(object):
         merge_stat(s, stat)
         for p in self.params:
             if p._grad is not None:
-                p._grad.data /= stat['num_steps']
+                p._grad.data /= stat['num_steps']   # num_steps = 500
         self.optimizer.step()
 
         return stat
