@@ -613,10 +613,9 @@ class TrafficJunctionEnv(gym.Env):
 
     def curriculum(self, epoch):
         step_size = 0.01
-        step = (self.add_rate_max - self.add_rate_min) / (self.curr_end - self.curr_start)
-
-        if self.curr_start <= epoch < self.curr_end:
-            self.exact_rate = self.exact_rate + step
-            self.add_rate = step_size * (self.exact_rate // step_size)
-        print(self.add_rate)
-        print('{:.2f}'.format(self.add_rate))
+        upgrade_gap = (self.curr_end - self.curr_start) / 100 / (self.add_rate_max - self.add_rate_min)
+        if self.curr_start <= epoch <= self.curr_end:
+            self.add_rate = round(self.add_rate_min + step_size * math.floor((epoch - self.curr_start) / upgrade_gap), 2)
+        # if self.curr_start <= epoch <= self.curr_end:
+        #     self.exact_rate = self.exact_rate + step
+        #     self.add_rate = step_size * (self.exact_rate // step_size)
